@@ -13,7 +13,10 @@ import (
 const (
 	// rateLimiterTime is how frequently we query for new data
 	// Scryfall says they only update once per day
-	rateLimiterTime = 86400000 * time.Millisecond
+	// rateLimiterTime = 86400000 * time.Millisecond
+
+	// Overwritten to every 5 mins for now, anyway
+	rateLimiterTime = 300000 * time.Millisecond
 )
 
 // CreatePriceReader sets up all necessary hooks into the PriceReader chan
