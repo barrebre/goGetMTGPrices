@@ -29,6 +29,9 @@
   name = "github.com/stretchr/testify"
   version = "1.5.0"
 
+[[constraint]]
+  name = "github.com/influxdata/influxdb"
+
 [prune]
   go-tests = true
   unused-packages = true
