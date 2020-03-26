@@ -18,10 +18,19 @@ type CardPrice struct {
 	Price string
 }
 
-// GetCardPrices asdf
-func GetCardPrices(cards []collection.Card, priceChannel chan CardPrice) ([]CardPrice, error) {
-	prices := []CardPrice{}
+// ScryfallCard includes the relevant fields we're looking for when querying Scryfall
+type ScryfallCard struct {
+	Prices ScryfallPrices `json:"prices"`
+}
 
+// ScryfallPrices lets us access the prices from the json
+type ScryfallPrices struct {
+	USD     string `json:"usd"`
+	USDFoil string `json:"usd_foil"`
+}
+
+// GetCardPrices iterates through a collection and writes each card's price into a channel
+func GetCardPrices(cards []collection.Card, priceChannel chan CardPrice) {
 	for _, card := range cards {
 		time.Sleep(100 * time.Millisecond)
 
@@ -38,21 +47,9 @@ func GetCardPrices(cards []collection.Card, priceChannel chan CardPrice) ([]Card
 			}
 		}(card, priceChannel)
 	}
-
-	return prices, nil
 }
 
-// ScryfallCard describes
-type ScryfallCard struct {
-	Prices ScryfallPrices `json:"prices"`
-}
-
-// ScryfallPrices asdf
-type ScryfallPrices struct {
-	USD     string `json:"usd"`
-	USDFoil string `json:"usd_foil"`
-}
-
+// getCardPrice is what actually queries Scryfall to get the current price
 func getCardPrice(card collection.Card) (string, error) {
 	cardNameEscaped := url.QueryEscape(card.CardName)
 
