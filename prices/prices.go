@@ -12,23 +12,6 @@ import (
 	"github.com/barrebre/goGetMTGPrices/collection"
 )
 
-// CardPrice is
-type CardPrice struct {
-	Card  collection.Card
-	Price string
-}
-
-// ScryfallCard includes the relevant fields we're looking for when querying Scryfall
-type ScryfallCard struct {
-	Prices ScryfallPrices `json:"prices"`
-}
-
-// ScryfallPrices lets us access the prices from the json
-type ScryfallPrices struct {
-	USD     string `json:"usd"`
-	USDFoil string `json:"usd_foil"`
-}
-
 // GetCardPrices iterates through a collection and writes each card's price into a channel
 func GetCardPrices(cards []collection.Card, priceChannel chan CardPrice) {
 	for _, card := range cards {
@@ -37,7 +20,7 @@ func GetCardPrices(cards []collection.Card, priceChannel chan CardPrice) {
 		go func(card collection.Card, priceChannel chan CardPrice) {
 			price, err := getCardPrice(card)
 			if err != nil {
-				fmt.Printf("ERROR - Unable to get pricing for %v - %v.\n", card, err)
+				fmt.Printf("ERROR - Unable to get pricing for %v - %v.\n", card, err.Error())
 			} else {
 				newCardPrice := CardPrice{
 					Card:  card,
@@ -66,7 +49,7 @@ func getCardPrice(card collection.Card) (string, error) {
 	// log.Println("output is: ", string(data))
 	err = json.Unmarshal(data, &scryfallCard)
 	if err != nil {
-		return "", fmt.Errorf("Couldn't read price information for card %v - %v", card.CardName, err)
+		return "", fmt.Errorf("Couldn't read price information for card %v - %v", card.CardName, err.Error())
 	}
 
 	if scryfallCard.Prices.USD != "" {
