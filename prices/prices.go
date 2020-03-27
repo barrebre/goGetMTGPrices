@@ -52,10 +52,11 @@ func getCardPrice(card collection.Card) (string, error) {
 		return "", fmt.Errorf("Couldn't read price information for card %v - %v", card.CardName, err.Error())
 	}
 
-	if scryfallCard.Prices.USD != "" {
-		// log.Println("Found value ", scryfallCard.Prices.USD)
+	if card.Foil && scryfallCard.Prices.USDFoil != "" {
+		return scryfallCard.Prices.USDFoil, nil
+	} else if scryfallCard.Prices.USD != "" {
 		return scryfallCard.Prices.USD, nil
 	}
 
-	return scryfallCard.Prices.USDFoil, nil
+	return "", fmt.Errorf("Couldn't get the price from Scryfall")
 }

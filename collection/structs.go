@@ -4,6 +4,7 @@ package collection
 
 // Card contains the shorthand definition of a card
 type Card struct {
+	Quantity int `json:"quantity"`
 	CardName string
 	CardSet  string
 	Foil     bool
@@ -16,13 +17,26 @@ type Collection struct {
 
 //// Accessors
 
-// MakeCard creates a card with the given parameters
-func MakeCard(cardName string, cardSet string, foil bool) Card {
-	return Card{
-		CardName: cardName,
-		CardSet:  cardSet,
-		Foil:     foil,
+// MakeCard creates a card with the given parameters, otherwise defaults
+func MakeCard(quantity int, cardName string, cardSet string, foil bool) Card {
+	newCard := Card{
+		Quantity: 1,
+		CardName: "",
+		CardSet:  "",
+		Foil:     false,
 	}
+
+	if quantity != 0 {
+		newCard.Quantity = quantity
+	}
+	if foil == true {
+		newCard.Foil = true
+	}
+
+	newCard.CardName = cardName
+	newCard.CardSet = cardSet
+
+	return newCard
 }
 
 // MakeCollection creates a collection with the given parameters
@@ -32,9 +46,14 @@ func MakeCollection(cards []Card) Collection {
 
 //// Example Accessors
 
+// MakeDefaultCard returns an example card
+func MakeDefaultCard() Card {
+	return MakeCard(1, "", "", false)
+}
+
 // MakeExampleCard returns an example card
 func MakeExampleCard() Card {
-	return MakeCard("Mogis, God of Slaughter", "bng", false)
+	return MakeCard(1, "Mogis, God of Slaughter", "bng", false)
 }
 
 // MakeExampleCollection returns an example collection of cards
@@ -44,7 +63,7 @@ func MakeExampleCollection() Collection {
 
 // MakeInvalidExampleCollection returns an example collection of invalid cards
 func MakeInvalidExampleCollection() Collection {
-	invalidCard := MakeCard("Brett Bretterson", "bab", false)
+	invalidCard := MakeCard(1, "Brett Bretterson", "bab", false)
 
 	return Collection{[]Card{invalidCard, invalidCard}}
 }
