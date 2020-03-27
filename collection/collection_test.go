@@ -41,11 +41,17 @@ func TestGetCards(t *testing.T) {
 			ExpectPass:         true,
 			ExpectedCollection: testingExpectedCollection,
 		},
+		testDefs{
+			Name:          "Invalid List",
+			CardLocation:  "F@",
+			ExpectPass:    false,
+			ExpectedError: "couldn't read card list - couldn't read file from file location: F@",
+		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.Name, func(t *testing.T) {
-			cards, err := GetCards(testingCardListLoc)
+			cards, err := GetCards(test.CardLocation)
 
 			if test.ExpectPass {
 				assert.NoError(t, err)
@@ -114,7 +120,7 @@ func TestReadCardList(t *testing.T) {
 		testDefs{
 			Name:          "Missing File",
 			ExpectPass:    false,
-			ExpectedError: "open : no such file or directory",
+			ExpectedError: "couldn't read file from file location: ",
 		},
 	}
 

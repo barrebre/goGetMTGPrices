@@ -6,22 +6,16 @@ import (
 	"strings"
 )
 
-// Card contains the shorthand definition of a card
-type Card struct {
-	CardName string
-	CardSet  string
-}
-
 // GetCards takes a pointer to a file to read a list of cards
 func GetCards(loc string) ([]Card, error) {
 	cardStrings, err := readCardList(loc)
 	if err != nil {
-		return nil, fmt.Errorf("couldn't read card list - %v", err)
+		return nil, fmt.Errorf("couldn't read card list - %v", err.Error())
 	}
 
 	parsedCards, err := parseCardList(cardStrings)
 	if err != nil {
-		return nil, fmt.Errorf("couldn't parse cards - %v", err)
+		return nil, fmt.Errorf("couldn't parse cards - %v", err.Error())
 	}
 
 	return parsedCards, nil
@@ -48,8 +42,9 @@ func parseCardList(list string) ([]Card, error) {
 
 func readCardList(loc string) (string, error) {
 	dat, err := ioutil.ReadFile(loc)
+	// log.Println("data string: ", string(dat), ". error: ", err.Error())
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("couldn't read file from file location: %v", loc)
 	}
 
 	return string(dat), nil

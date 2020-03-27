@@ -29,7 +29,7 @@ func StartLookupScheduler(priceChannel chan prices.CardPrice) {
 	for {
 		err := lookup(priceChannel)
 		if err != nil {
-			log.Printf("Error running at %v - %v.\n", time.Now(), err)
+			log.Printf("Error running at %v - %v.\n", time.Now(), err.Error())
 		} else {
 			log.Printf("Successful run at %v.\n", time.Now())
 		}
@@ -43,12 +43,12 @@ func StartLookupScheduler(priceChannel chan prices.CardPrice) {
 func lookup(priceChannel chan prices.CardPrice) error {
 	cards, err := collection.GetCards("example/cardList.txt")
 	if err != nil {
-		return fmt.Errorf("couldn't read card list - %v", err)
+		return fmt.Errorf("couldn't read card list - %v", err.Error())
 	}
 
 	prices.GetCardPrices(cards, priceChannel)
 	if err != nil {
-		return fmt.Errorf("couldn't read price from scryfall - %v", err)
+		return fmt.Errorf("couldn't read price from scryfall - %v", err.Error())
 	}
 
 	return nil

@@ -14,6 +14,7 @@ const (
 	myDB = "CardPrices"
 )
 
+// SendPriceMetrics reads the prices channel and sends the info to influx
 func SendPriceMetrics(prices chan prices.CardPrice) {
 	go func() {
 		for {
@@ -22,7 +23,7 @@ func SendPriceMetrics(prices chan prices.CardPrice) {
 
 			err := sendInfluxData(price)
 			if err != nil {
-				log.Printf("Couldn't send price info to influx for %v.\n", err)
+				log.Printf("Couldn't send price info to influx for %v.\n", err.Error())
 			}
 		}
 	}()
@@ -33,7 +34,7 @@ func sendInfluxData(price prices.CardPrice) error {
 		Addr: "http://influxdb-service:8086",
 	})
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(err.Error())
 	}
 	defer c.Close()
 
@@ -43,7 +44,7 @@ func sendInfluxData(price prices.CardPrice) error {
 		Precision: "s",
 	})
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(err.Error())
 	}
 
 	// Create a point and add to batch
@@ -54,7 +55,7 @@ func sendInfluxData(price prices.CardPrice) error {
 
 	priceFloat, err := strconv.ParseFloat(price.Price, 2)
 	if err != nil {
-		return fmt.Errorf("couldn't parse pricing data into float - %v", err)
+		return fmt.Errorf("couldn't parse pricing data into float - %v", err.Error())
 	}
 	fields := map[string]interface{}{
 		"value": priceFloat,
@@ -62,18 +63,18 @@ func sendInfluxData(price prices.CardPrice) error {
 
 	pt, err := client.NewPoint("price", tags, fields, time.Now())
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(err.Error())
 	}
 	bp.AddPoint(pt)
 
 	// Write the batch
 	if err := c.Write(bp); err != nil {
-		log.Fatal(err)
+		log.Fatal(err.Error())
 	}
 
 	// Close client resources
 	if err := c.Close(); err != nil {
-		log.Fatal(err)
+		log.Fatal(err.Error())
 	}
 
 	return nil
