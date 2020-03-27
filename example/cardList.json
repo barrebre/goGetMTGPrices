@@ -1,0 +1,16 @@
+{
+  "cards": [
+    {
+      "CardName": "Mogis, God of Slaughter",
+      "CardSet": "bng"
+    },
+    {
+      "CardName": "Alela, Artful Provocateur"
+    },
+    {
+      "CardName": "Estrid, the Masked",
+      "CardSet": "c18",
+      "Foil": true
+    }
+  ]
+}

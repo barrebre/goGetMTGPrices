@@ -13,8 +13,8 @@ import (
 )
 
 // GetCardPrices iterates through a collection and writes each card's price into a channel
-func GetCardPrices(cards []collection.Card, priceChannel chan CardPrice) {
-	for _, card := range cards {
+func GetCardPrices(cards collection.Collection, priceChannel chan CardPrice) {
+	for _, card := range cards.Cards {
 		time.Sleep(100 * time.Millisecond)
 
 		go func(card collection.Card, priceChannel chan CardPrice) {
