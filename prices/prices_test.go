@@ -8,7 +8,7 @@ import (
 
 func TestGetCardPrices(t *testing.T) {
 	type inputs struct {
-		Cards        []collection.Card
+		Cards        collection.Collection
 		priceChannel chan CardPrice
 	}
 
@@ -23,7 +23,7 @@ func TestGetCardPrices(t *testing.T) {
 		testDefs{
 			Name: "Valid",
 			Inputs: inputs{
-				Cards:        collection.GetExampleCollection(),
+				Cards:        collection.MakeExampleCollection(),
 				priceChannel: make(chan CardPrice),
 			},
 			ExpectPass: true,
@@ -31,7 +31,7 @@ func TestGetCardPrices(t *testing.T) {
 		testDefs{
 			Name: "Invalid Card",
 			Inputs: inputs{
-				Cards:        collection.GetInvalidExampleCollection(),
+				Cards:        collection.MakeInvalidExampleCollection(),
 				priceChannel: make(chan CardPrice),
 			},
 			ExpectPass: true,

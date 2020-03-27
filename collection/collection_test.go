@@ -7,20 +7,37 @@ import (
 )
 
 var (
-	testingCardListLoc        = "../example/cardList.txt"
-	testingCardList           = "Mogis, God of Slaughter - bng\nAlela, Artful Provocateur - eld\nEstrid, the Masked - c18"
-	testingExpectedCollection = []Card{
-		{
-			CardName: "Mogis, God of Slaughter",
-			CardSet:  "bng",
-		},
-		{
-			CardName: "Alela, Artful Provocateur",
-			CardSet:  "eld",
-		},
-		{
-			CardName: "Estrid, the Masked",
-			CardSet:  "c18",
+	testingCardListLoc = "../example/cardList.json"
+	testingCardList    = `{
+  "cards": [
+    {
+      "CardName": "Mogis, God of Slaughter",
+      "CardSet": "bng"
+    },
+    {
+      "CardName": "Alela, Artful Provocateur"
+    },
+    {
+      "CardName": "Estrid, the Masked",
+      "CardSet": "c18",
+      "Foil": true
+    }
+  ]
+}`
+	testingExpectedCollection = Collection{
+		[]Card{
+			{
+				CardName: "Mogis, God of Slaughter",
+				CardSet:  "bng",
+			},
+			{
+				CardName: "Alela, Artful Provocateur",
+			},
+			{
+				CardName: "Estrid, the Masked",
+				CardSet:  "c18",
+				Foil:     true,
+			},
 		},
 	}
 )
@@ -31,7 +48,7 @@ func TestGetCards(t *testing.T) {
 		CardLocation       string
 		ExpectPass         bool
 		ExpectedError      string
-		ExpectedCollection []Card
+		ExpectedCollection Collection
 	}
 
 	tests := []testDefs{
@@ -69,7 +86,7 @@ func TestParseCardList(t *testing.T) {
 		CardList           string
 		ExpectPass         bool
 		ExpectedError      string
-		ExpectedCollection []Card
+		ExpectedCollection Collection
 	}
 
 	tests := []testDefs{
@@ -83,7 +100,7 @@ func TestParseCardList(t *testing.T) {
 			Name:          "Invalid List",
 			CardList:      "asdf",
 			ExpectPass:    false,
-			ExpectedError: "couldnt read card asdf",
+			ExpectedError: "There was an error with parsing the collection - asdf",
 		},
 	}
 
