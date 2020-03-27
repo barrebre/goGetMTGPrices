@@ -47,10 +47,18 @@ func sendInfluxData(price prices.CardPrice) error {
 		log.Fatal(err.Error())
 	}
 
+	// Check if foil
+	foilCard := "false"
+	if price.Card.Foil {
+		foilCard = "true"
+	}
+
 	// Create a point and add to batch
 	tags := map[string]string{
 		"cardName": price.Card.CardName,
 		"cardSet":  price.Card.CardSet,
+		"foil":     foilCard,
+		"quantity": fmt.Sprintf("%v", price.Card.Quantity),
 	}
 
 	priceFloat, err := strconv.ParseFloat(price.Price, 2)
@@ -58,7 +66,9 @@ func sendInfluxData(price prices.CardPrice) error {
 		return fmt.Errorf("couldn't parse pricing data into float - %v", err.Error())
 	}
 	fields := map[string]interface{}{
-		"value": priceFloat,
+		"value":      priceFloat,
+		"quantity":   price.Card.Quantity,
+		"totalValue": priceFloat * float64(price.Card.Quantity),
 	}
 
 	pt, err := client.NewPoint("price", tags, fields, time.Now())
@@ -68,6 +78,7 @@ func sendInfluxData(price prices.CardPrice) error {
 	bp.AddPoint(pt)
 
 	// Write the batch
+	log.Printf("INFO - Sending metric: %v\n", pt.String())
 	if err := c.Write(bp); err != nil {
 		log.Fatal(err.Error())
 	}

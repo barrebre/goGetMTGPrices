@@ -11,6 +11,7 @@ var (
 	testingCardList    = `{
   "cards": [
     {
+      "Quantity": 3,
       "CardName": "Mogis, God of Slaughter",
       "CardSet": "bng"
     },
@@ -27,13 +28,19 @@ var (
 	testingExpectedCollection = Collection{
 		[]Card{
 			{
+				Quantity: 3,
 				CardName: "Mogis, God of Slaughter",
 				CardSet:  "bng",
+				Foil:     false,
 			},
 			{
+				Quantity: 1,
 				CardName: "Alela, Artful Provocateur",
+				CardSet:  "",
+				Foil:     false,
 			},
 			{
+				Quantity: 1,
 				CardName: "Estrid, the Masked",
 				CardSet:  "c18",
 				Foil:     true,

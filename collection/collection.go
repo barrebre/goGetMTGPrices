@@ -29,7 +29,19 @@ func parseCardList(list string) (Collection, error) {
 		return Collection{}, fmt.Errorf("There was an error with parsing the collection - %v", list)
 	}
 
-	return collection, nil
+	return standardizeCards(collection), nil
+}
+
+func standardizeCards(parsedCards Collection) Collection {
+	standardizedCards := Collection{[]Card{}}
+
+	var tempCard Card
+	for _, card := range parsedCards.Cards {
+		tempCard = MakeCard(card.Quantity, card.CardName, card.CardSet, card.Foil)
+		standardizedCards.Cards = append(standardizedCards.Cards, tempCard)
+	}
+
+	return standardizedCards
 }
 
 func readCardList(loc string) (string, error) {
