@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	testingCardListLoc = "../config/cardList.json"
+	testingCardListLoc = "../config/exampleCardList.json"
 	testingCardList    = `{
   "cards": [
     {
