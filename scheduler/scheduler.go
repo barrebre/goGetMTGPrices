@@ -41,7 +41,7 @@ func StartLookupScheduler(priceChannel chan prices.CardPrice) {
 
 // we pass the priceChannel we want to write to
 func lookup(priceChannel chan prices.CardPrice) error {
-	cards, err := collection.GetCards("example/cardList.json")
+	cards, err := collection.GetCards("config/cardList.json")
 	if err != nil {
 		return fmt.Errorf("couldn't read card list - %v", err.Error())
 	}
