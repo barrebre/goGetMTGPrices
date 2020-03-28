@@ -6,7 +6,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/barrebre/goGetMTGPrices/collection"
 	"github.com/barrebre/goGetMTGPrices/prices"
+
 	"github.com/influxdata/influxdb/client/v2"
 )
 
@@ -29,6 +31,7 @@ func SendPriceMetrics(prices chan prices.CardPrice) {
 	}()
 }
 
+// Sends the metric data to Influx
 func sendInfluxData(price prices.CardPrice) error {
 	c, err := client.NewHTTPClient(client.HTTPConfig{
 		Addr: "http://influxdb-service:8086",
@@ -47,28 +50,10 @@ func sendInfluxData(price prices.CardPrice) error {
 		log.Fatal(err.Error())
 	}
 
-	// Check if foil
-	foilCard := "false"
-	if price.Card.Foil {
-		foilCard = "true"
-	}
-
-	// Create a point and add to batch
-	tags := map[string]string{
-		"cardName": price.Card.CardName,
-		"cardSet":  price.Card.CardSet,
-		"foil":     foilCard,
-		"quantity": fmt.Sprintf("%v", price.Card.Quantity),
-	}
-
-	priceFloat, err := strconv.ParseFloat(price.Price, 2)
+	tags := getCardTags(price)
+	fields, err := getCardFields(price)
 	if err != nil {
-		return fmt.Errorf("couldn't parse pricing data into float - %v", err.Error())
-	}
-	fields := map[string]interface{}{
-		"value":      priceFloat,
-		"quantity":   price.Card.Quantity,
-		"totalValue": priceFloat * float64(price.Card.Quantity),
+		return fmt.Errorf("Couldn't build fields - %v", price)
 	}
 
 	pt, err := client.NewPoint("price", tags, fields, time.Now())
@@ -89,4 +74,44 @@ func sendInfluxData(price prices.CardPrice) error {
 	}
 
 	return nil
+}
+
+// Builds the Tags for a Card
+func getCardTags(price prices.CardPrice) map[string]string {
+	foilCard := isFoil(price.Card)
+
+	// Create a point and add to batch
+	return map[string]string{
+		"cardName": price.Card.CardName,
+		"cardSet":  price.Card.CardSet,
+		"foil":     foilCard,
+		"quantity": fmt.Sprintf("%v", price.Card.Quantity),
+	}
+}
+
+// Check if foil
+func isFoil(card collection.Card) string {
+	foilCard := "false"
+	if card.Foil {
+		foilCard = "true"
+	}
+
+	return foilCard
+}
+
+// Builds the Fields for a card
+func getCardFields(price prices.CardPrice) (map[string]interface{}, error) {
+	// Turn the price into a float
+	priceFloat, err := strconv.ParseFloat(price.Price, 2)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't parse pricing data into float - %v", err.Error())
+	}
+
+	fields := map[string]interface{}{
+		"value":      priceFloat,
+		"quantity":   price.Card.Quantity,
+		"totalValue": priceFloat * float64(price.Card.Quantity),
+	}
+
+	return fields, nil
 }

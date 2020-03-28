@@ -20,3 +20,20 @@ type ScryfallPrices struct {
 	USD     string `json:"usd"`
 	USDFoil string `json:"usd_foil"`
 }
+
+//// Accessor
+
+// MakeCardPrice makes a CardPrice object
+func MakeCardPrice(card collection.Card, price string) CardPrice {
+	return CardPrice{
+		Card:  card,
+		Price: price,
+	}
+}
+
+//// Example Accessors
+
+// MakeExampleCardPrice creates an example CardPrice object
+func MakeExampleCardPrice() CardPrice {
+	return MakeCardPrice(collection.MakeExampleCard(), "7.21")
+}
