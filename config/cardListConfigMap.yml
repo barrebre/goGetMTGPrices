@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: card-list-configmap
+spec:
+  containers:
+    - name: test
+      image: busybox
+      volumeMounts:
+        - name: card-list-configmap
+          mountPath: /go/src/github.com/barrebre/goGetMTGPrices/config
+  volumes:
+    - name: card-list-configmap
+      configMap:
+        name: card-list-configmap
+        items:
+          - key: cardList.json
