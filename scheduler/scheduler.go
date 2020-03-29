@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/barrebre/goGetMTGPrices/collection"
-	"github.com/barrebre/goGetMTGPrices/metrics"
 	"github.com/barrebre/goGetMTGPrices/prices"
 )
 
@@ -18,11 +17,6 @@ const (
 	// Overwritten to every 5 mins for now, anyway
 	rateLimiterTime = 300000 * time.Millisecond
 )
-
-// CreatePriceReader sets up all necessary hooks into the PriceReader chan
-func CreatePriceReader(prices chan prices.CardPrice) {
-	metrics.SendPriceMetrics(prices)
-}
 
 // StartLookupScheduler starts the infinite loop which queries prices after the rateLimiter
 func StartLookupScheduler(priceChannel chan prices.CardPrice) {

@@ -9,67 +9,66 @@ import (
 	"github.com/barrebre/goGetMTGPrices/collection"
 	"github.com/barrebre/goGetMTGPrices/prices"
 
-	"github.com/influxdata/influxdb/client/v2"
+	influx "github.com/influxdata/influxdb/client/v2"
 )
 
-const (
-	myDB = "CardPrices"
-)
+// SetupMetrics sets up reqs for sending metrics to influx
+func SetupMetrics(prices chan prices.CardPrice) error {
+	client, err := createInfluxClient()
+	if err != nil {
+		return fmt.Errorf("error creating Influx client - %v", err)
+	}
 
-// SendPriceMetrics reads the prices channel and sends the info to influx
-func SendPriceMetrics(prices chan prices.CardPrice) {
+	bp, err := createBatchPointsStruct(client)
+	if err != nil {
+		return fmt.Errorf("couldn't create batch points - %v", err)
+	}
+
+	ReadPriceMetrics(prices, bp)
+	return nil
+}
+
+// ReadPriceMetrics reads the prices channel and sends the info to influx
+func ReadPriceMetrics(prices chan prices.CardPrice, bp *batchPointsStruct) {
 	go func() {
 		for {
 			price := <-prices
 			log.Printf("Read in price: %v.\n", price)
 
-			err := sendInfluxData(price)
+			pt, err := createCardInfluxDataPoint(price)
 			if err != nil {
 				log.Printf("Couldn't send price info to influx for %v.\n", err.Error())
 			}
+
+			bp.addPoint(*pt)
 		}
 	}()
 }
 
-// Sends the metric data to Influx
-func sendInfluxData(price prices.CardPrice) error {
-	c, err := client.NewHTTPClient(client.HTTPConfig{
-		Addr: "http://influxdb-service:8086",
-	})
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	defer c.Close()
-
-	// Create a new point batch
-	bp, err := client.NewBatchPoints(client.BatchPointsConfig{
-		Database:  myDB,
-		Precision: "s",
-	})
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
+func createCardInfluxDataPoint(price prices.CardPrice) (*influx.Point, error) {
 	tags := getCardTags(price)
 	fields, err := getCardFields(price)
 	if err != nil {
-		return fmt.Errorf("Couldn't build fields - %v", price)
+		return &influx.Point{}, fmt.Errorf("Couldn't build fields - %v", price)
 	}
 
-	pt, err := client.NewPoint("price", tags, fields, time.Now())
+	pt, err := influx.NewPoint("price", tags, fields, time.Now())
 	if err != nil {
-		log.Fatal(err.Error())
+		return &influx.Point{}, fmt.Errorf("couldn't create influx point - %v", err)
 	}
-	bp.AddPoint(pt)
 
+	return pt, nil
+}
+
+// Sends the metric data to Influx
+func createInfluxDataPoint(price prices.CardPrice, client influx.Client, bp influx.BatchPoints) error {
 	// Write the batch
-	log.Printf("INFO - Sending metric: %v\n", pt.String())
-	if err := c.Write(bp); err != nil {
+	if err := client.Write(bp); err != nil {
 		log.Fatal(err.Error())
 	}
 
 	// Close client resources
-	if err := c.Close(); err != nil {
+	if err := client.Close(); err != nil {
 		log.Fatal(err.Error())
 	}
 
