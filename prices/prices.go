@@ -12,10 +12,14 @@ import (
 	"github.com/barrebre/goGetMTGPrices/collection"
 )
 
+const (
+	queryPricingDelay = 100 * time.Millisecond
+)
+
 // GetCardPrices iterates through a collection and writes each card's price into a channel
 func GetCardPrices(cards collection.Collection, priceChannel chan CardPrice) {
 	for _, card := range cards.Cards {
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(queryPricingDelay)
 
 		go func(card collection.Card, priceChannel chan CardPrice) {
 			price, err := getCardPrice(card)
