@@ -18,7 +18,7 @@ func createInfluxClient() (influx.Client, error) {
 	return c, nil
 }
 
-func createInfluxBatchPoints(bp batchPointsStruct) (influx.BatchPoints, error) {
+func createInfluxBatchPoints(bp *batchPointsStruct) (influx.BatchPoints, error) {
 	influxBP, err := createBatchPointConfig(bp.Client)
 	if err != nil {
 		return nil, fmt.Errorf("couldn't create batch point config - %v", err)
