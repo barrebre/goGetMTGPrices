@@ -56,6 +56,7 @@ func createCardInfluxDataPoint(price prices.CardPrice) (*influx.Point, error) {
 	if err != nil {
 		return &influx.Point{}, fmt.Errorf("couldn't create influx point - %v", err)
 	}
+	// log.Printf("Made influx point: %v.\n", spew.Sdump(pt))
 
 	return pt, nil
 }
@@ -85,6 +86,7 @@ func getCardTags(price prices.CardPrice) map[string]string {
 		"cardSet":  price.Card.CardSet,
 		"foil":     foilCard,
 		"quantity": fmt.Sprintf("%v", price.Card.Quantity),
+		"deck":     price.Card.Deck,
 	}
 }
 

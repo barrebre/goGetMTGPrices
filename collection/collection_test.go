@@ -13,7 +13,8 @@ var (
     {
       "Quantity": 3,
       "CardName": "Mogis, God of Slaughter",
-      "CardSet": "bng"
+      "CardSet": "bng",
+      "Deck": "Mogis"
     },
     {
       "CardName": "Alela, Artful Provocateur"
@@ -32,6 +33,7 @@ var (
 				CardName: "Mogis, God of Slaughter",
 				CardSet:  "bng",
 				Foil:     false,
+				Deck:     "Mogis",
 			},
 			{
 				Quantity: 1,
