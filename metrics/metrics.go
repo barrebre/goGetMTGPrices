@@ -7,13 +7,14 @@ import (
 	"time"
 
 	"github.com/barrebre/goGetMTGPrices/collection"
+	"github.com/barrebre/goGetMTGPrices/config"
 	"github.com/barrebre/goGetMTGPrices/prices"
 
 	influx "github.com/influxdata/influxdb/client/v2"
 )
 
 // SetupMetrics sets up reqs for sending metrics to influx
-func SetupMetrics(prices chan prices.CardPrice) error {
+func SetupMetrics() error {
 	client, err := createInfluxClient()
 	if err != nil {
 		return fmt.Errorf("error creating Influx client - %v", err)
@@ -24,15 +25,15 @@ func SetupMetrics(prices chan prices.CardPrice) error {
 		return fmt.Errorf("couldn't create batch points - %v", err)
 	}
 
-	ReadPriceMetrics(prices, bp)
+	ReadPriceMetrics(config.GetPriceChannel(), bp)
 	return nil
 }
 
 // ReadPriceMetrics reads the prices channel and sends the info to influx
-func ReadPriceMetrics(prices chan prices.CardPrice, bp *batchPointsStruct) {
+func ReadPriceMetrics(prices *chan prices.CardPrice, bp *batchPointsStruct) {
 	go func() {
 		for {
-			price := <-prices
+			price := <-*prices
 			// log.Printf("Read in price: %v.\n", price)
 
 			pt, err := createCardInfluxDataPoint(price)

@@ -18,19 +18,6 @@ func createInfluxClient() (influx.Client, error) {
 	return c, nil
 }
 
-func createInfluxBatchPoints(bp *batchPointsStruct) (influx.BatchPoints, error) {
-	influxBP, err := createBatchPointConfig(bp.Client)
-	if err != nil {
-		return nil, fmt.Errorf("couldn't create batch point config - %v", err)
-	}
-
-	for _, point := range bp.Points {
-		influxBP.AddPoint(point)
-	}
-
-	return influxBP, nil
-}
-
 // Creates a new Batch Point Config
 func createBatchPointConfig(client influx.Client) (influx.BatchPoints, error) {
 	bp, err := influx.NewBatchPoints(influx.BatchPointsConfig{

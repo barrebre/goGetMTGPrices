@@ -16,6 +16,22 @@ const (
 	queryPricingDelay = 100 * time.Millisecond
 )
 
+var (
+	priceChannel chan CardPrice
+)
+
+// GetPriceChannel returns a channel to write prices to
+func GetPriceChannel() *chan CardPrice {
+	if priceChannel != nil {
+		// log.Println("INFO - priceChannel exists")
+		return &priceChannel
+	}
+
+	// log.Println("INFO - Making new priceChannel")
+	priceChannel = make(chan CardPrice)
+	return &priceChannel
+}
+
 // GetCardPrices iterates through a collection and writes each card's price into a channel
 func GetCardPrices(cards collection.Collection, priceChannel chan CardPrice) {
 	for _, card := range cards.Cards {
@@ -30,6 +46,7 @@ func GetCardPrices(cards collection.Collection, priceChannel chan CardPrice) {
 					Card:  card,
 					Price: price,
 				}
+
 				priceChannel <- newCardPrice
 			}
 		}(card, priceChannel)

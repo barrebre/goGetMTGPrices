@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/barrebre/goGetMTGPrices/collection"
+	"github.com/barrebre/goGetMTGPrices/config"
 	"github.com/barrebre/goGetMTGPrices/prices"
 )
 
@@ -15,13 +16,13 @@ const (
 	// rateLimiterTime = 86400000 * time.Millisecond
 
 	// Overwritten to every 5 mins for now, anyway
-	rateLimiterTime = 300000 * time.Millisecond
+	rateLimiterTime = 1000 * time.Millisecond
 )
 
 // StartLookupScheduler starts the infinite loop which queries prices after the rateLimiter
-func StartLookupScheduler(priceChannel chan prices.CardPrice) {
+func StartLookupScheduler() {
 	for {
-		err := lookup(priceChannel)
+		err := lookup(config.GetPriceChannel())
 		if err != nil {
 			log.Printf("Error running at %v - %v.\n", time.Now(), err.Error())
 		} else {
@@ -34,7 +35,7 @@ func StartLookupScheduler(priceChannel chan prices.CardPrice) {
 }
 
 // we pass the priceChannel we want to write to
-func lookup(priceChannel chan prices.CardPrice) error {
+func lookup(priceChannel *chan prices.CardPrice) error {
 	var cards collection.Collection
 	cards, err := collection.GetCards("config/cardList.json")
 	if err != nil {
@@ -45,7 +46,7 @@ func lookup(priceChannel chan prices.CardPrice) error {
 		}
 	}
 
-	prices.GetCardPrices(cards, priceChannel)
+	prices.GetCardPrices(cards, *priceChannel)
 	if err != nil {
 		return fmt.Errorf("couldn't read price from scryfall - %v", err.Error())
 	}
