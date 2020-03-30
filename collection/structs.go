@@ -8,6 +8,7 @@ type Card struct {
 	CardName string
 	CardSet  string
 	Foil     bool
+	Deck     string
 }
 
 // Collection contains an array of cards
@@ -18,12 +19,13 @@ type Collection struct {
 //// Accessors
 
 // MakeCard creates a card with the given parameters, otherwise defaults
-func MakeCard(quantity int, cardName string, cardSet string, foil bool) Card {
+func MakeCard(quantity int, cardName string, cardSet string, foil bool, deck string) Card {
 	newCard := Card{
 		Quantity: 1,
 		CardName: "",
 		CardSet:  "",
 		Foil:     false,
+		Deck:     "",
 	}
 
 	if quantity != 0 {
@@ -35,6 +37,7 @@ func MakeCard(quantity int, cardName string, cardSet string, foil bool) Card {
 
 	newCard.CardName = cardName
 	newCard.CardSet = cardSet
+	newCard.Deck = deck
 
 	return newCard
 }
@@ -48,12 +51,12 @@ func MakeCollection(cards []Card) Collection {
 
 // MakeDefaultCard returns an example card
 func MakeDefaultCard() Card {
-	return MakeCard(1, "", "", false)
+	return MakeCard(1, "", "", false, "")
 }
 
 // MakeExampleCard returns an example card
 func MakeExampleCard() Card {
-	return MakeCard(1, "Mogis, God of Slaughter", "bng", false)
+	return MakeCard(1, "Mogis, God of Slaughter", "bng", false, "Mogis")
 }
 
 // MakeExampleCollection returns an example collection of cards
@@ -63,7 +66,7 @@ func MakeExampleCollection() Collection {
 
 // MakeInvalidExampleCollection returns an example collection of invalid cards
 func MakeInvalidExampleCollection() Collection {
-	invalidCard := MakeCard(1, "Brett Bretterson", "bab", false)
+	invalidCard := MakeCard(1, "Brett Bretterson", "bab", false, "")
 
 	return Collection{[]Card{invalidCard, invalidCard}}
 }

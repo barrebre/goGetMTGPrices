@@ -37,7 +37,7 @@ func standardizeCards(parsedCards Collection) Collection {
 
 	var tempCard Card
 	for _, card := range parsedCards.Cards {
-		tempCard = MakeCard(card.Quantity, card.CardName, card.CardSet, card.Foil)
+		tempCard = MakeCard(card.Quantity, card.CardName, card.CardSet, card.Foil, card.Deck)
 		standardizedCards.Cards = append(standardizedCards.Cards, tempCard)
 	}
 

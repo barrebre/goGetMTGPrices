@@ -21,7 +21,7 @@ func TestGetCardTags(t *testing.T) {
 			Name:         "Valid",
 			Price:        prices.MakeExampleCardPrice(),
 			ExpectPass:   true,
-			ExpectedTags: map[string]string{"cardName": "Mogis, God of Slaughter", "cardSet": "bng", "foil": "false", "quantity": "1"},
+			ExpectedTags: map[string]string{"cardName": "Mogis, God of Slaughter", "cardSet": "bng", "deck": "Mogis", "foil": "false", "quantity": "1"},
 		},
 	}
 
