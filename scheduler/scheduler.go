@@ -19,9 +19,9 @@ const (
 )
 
 // StartLookupScheduler starts the infinite loop which queries prices after the rateLimiter
-func StartLookupScheduler(priceChannel chan prices.CardPrice) {
+func StartLookupScheduler() {
 	for {
-		err := lookup(priceChannel)
+		err := lookupCardsAndPrices()
 		if err != nil {
 			log.Printf("Error running at %v - %v.\n", time.Now(), err.Error())
 		} else {
@@ -34,7 +34,7 @@ func StartLookupScheduler(priceChannel chan prices.CardPrice) {
 }
 
 // we pass the priceChannel we want to write to
-func lookup(priceChannel chan prices.CardPrice) error {
+func lookupCardsAndPrices() error {
 	var cards collection.Collection
 	cards, err := collection.GetCards("config/cardList.json")
 	if err != nil {
@@ -45,7 +45,7 @@ func lookup(priceChannel chan prices.CardPrice) error {
 		}
 	}
 
-	prices.GetCardPrices(cards, priceChannel)
+	prices.GetCardPrices(cards)
 	if err != nil {
 		return fmt.Errorf("couldn't read price from scryfall - %v", err.Error())
 	}

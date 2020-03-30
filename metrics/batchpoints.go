@@ -61,6 +61,19 @@ func (bp *batchPointsStruct) addPoint(pt influx.Point) error {
 	return nil
 }
 
+func (bp *batchPointsStruct) createInfluxBatchPoints() (influx.BatchPoints, error) {
+	influxBP, err := createBatchPointConfig(bp.Client)
+	if err != nil {
+		return nil, fmt.Errorf("couldn't create batch point config - %v", err)
+	}
+
+	for _, point := range bp.Points {
+		influxBP.AddPoint(point)
+	}
+
+	return influxBP, nil
+}
+
 func (bp *batchPointsStruct) removePoints() {
 	bp.Points = bp.Points[:0]
 }
@@ -69,7 +82,7 @@ func (bp *batchPointsStruct) sendPoints() error {
 	pointCount := len(bp.Points)
 
 	if pointCount > 0 {
-		influxBP, err := createInfluxBatchPoints(bp)
+		influxBP, err := bp.createInfluxBatchPoints()
 		if err != nil {
 			return fmt.Errorf("couldn't create influxdb data points - %v", err)
 		}
