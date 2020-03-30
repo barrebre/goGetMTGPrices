@@ -35,6 +35,7 @@ func GetPriceChannel() *chan CardPrice {
 // GetCardPrices iterates through a collection and writes each card's price into a channel
 func GetCardPrices(cards collection.Collection) {
 	priceChannel := *GetPriceChannel()
+
 	for _, card := range cards.Cards {
 		time.Sleep(queryPricingDelay)
 
