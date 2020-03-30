@@ -33,7 +33,7 @@ func ReadPriceMetrics(prices chan prices.CardPrice, bp *batchPointsStruct) {
 	go func() {
 		for {
 			price := <-prices
-			log.Printf("Read in price: %v.\n", price)
+			// log.Printf("Read in price: %v.\n", price)
 
 			pt, err := createCardInfluxDataPoint(price)
 			if err != nil {
