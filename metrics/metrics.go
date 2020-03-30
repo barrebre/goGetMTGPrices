@@ -62,21 +62,6 @@ func createCardInfluxDataPoint(price prices.CardPrice) (*influx.Point, error) {
 	return pt, nil
 }
 
-// Sends the metric data to Influx
-func createInfluxDataPoint(price prices.CardPrice, client influx.Client, bp influx.BatchPoints) error {
-	// Write the batch
-	if err := client.Write(bp); err != nil {
-		log.Fatal(err.Error())
-	}
-
-	// Close client resources
-	if err := client.Close(); err != nil {
-		log.Fatal(err.Error())
-	}
-
-	return nil
-}
-
 // Builds the Tags for a Card
 func getCardTags(price prices.CardPrice) map[string]string {
 	foilCard := isFoil(price.Card)

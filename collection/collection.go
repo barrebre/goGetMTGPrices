@@ -21,12 +21,22 @@ func GetCards(loc string) (Collection, error) {
 	return parsedCards, nil
 }
 
+func readCardList(loc string) (string, error) {
+	dat, err := ioutil.ReadFile(loc)
+	// log.Println("data string: ", string(dat), ". error: ", err.Error())
+	if err != nil {
+		return "", fmt.Errorf("couldn't read file from file location: %v", loc)
+	}
+
+	return string(dat), nil
+}
+
 func parseCardList(list string) (Collection, error) {
 	var collection Collection
 	json.Unmarshal([]byte(list), &collection)
 
 	if len(collection.Cards) == 0 {
-		return Collection{}, fmt.Errorf("There was an error with parsing the collection - %v", list)
+		return Collection{}, fmt.Errorf("There was an error parsing the collection - %v", list)
 	}
 
 	return standardizeCards(collection), nil
@@ -42,14 +52,4 @@ func standardizeCards(parsedCards Collection) Collection {
 	}
 
 	return standardizedCards
-}
-
-func readCardList(loc string) (string, error) {
-	dat, err := ioutil.ReadFile(loc)
-	// log.Println("data string: ", string(dat), ". error: ", err.Error())
-	if err != nil {
-		return "", fmt.Errorf("couldn't read file from file location: %v", loc)
-	}
-
-	return string(dat), nil
 }
