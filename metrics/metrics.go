@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/barrebre/goGetMTGPrices/collection"
-	"github.com/barrebre/goGetMTGPrices/config"
 	"github.com/barrebre/goGetMTGPrices/prices"
 
 	influx "github.com/influxdata/influxdb/client/v2"
@@ -25,7 +24,7 @@ func SetupMetrics() error {
 		return fmt.Errorf("couldn't create batch points - %v", err)
 	}
 
-	ReadPriceMetrics(config.GetPriceChannel(), bp)
+	ReadPriceMetrics(prices.GetPriceChannel(), bp)
 	return nil
 }
 

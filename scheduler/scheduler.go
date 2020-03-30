@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/barrebre/goGetMTGPrices/collection"
-	"github.com/barrebre/goGetMTGPrices/config"
 	"github.com/barrebre/goGetMTGPrices/prices"
 )
 
@@ -22,7 +21,7 @@ const (
 // StartLookupScheduler starts the infinite loop which queries prices after the rateLimiter
 func StartLookupScheduler() {
 	for {
-		err := lookup(config.GetPriceChannel())
+		err := lookup(prices.GetPriceChannel())
 		if err != nil {
 			log.Printf("Error running at %v - %v.\n", time.Now(), err.Error())
 		} else {
