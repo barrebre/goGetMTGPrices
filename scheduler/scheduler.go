@@ -16,7 +16,7 @@ const (
 	// rateLimiterTime = 86400000 * time.Millisecond
 
 	// Overwritten to every 5 mins for now, anyway
-	rateLimiterTime = 1000 * time.Millisecond
+	rateLimiterTime = 300000 * time.Millisecond
 )
 
 // StartLookupScheduler starts the infinite loop which queries prices after the rateLimiter
