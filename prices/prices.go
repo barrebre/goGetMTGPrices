@@ -24,7 +24,7 @@ func GetCardPrices(cards collection.Collection, priceChannel chan CardPrice) {
 		go func(card collection.Card, priceChannel chan CardPrice) {
 			price, err := getCardPrice(card)
 			if err != nil {
-				fmt.Printf("ERROR - Unable to get pricing for %v - %v.\n", card, err.Error())
+				log.Printf("ERROR - Unable to get pricing for %v - %v.\n", card, err.Error())
 			} else {
 				newCardPrice := CardPrice{
 					Card:  card,
@@ -39,11 +39,9 @@ func GetCardPrices(cards collection.Collection, priceChannel chan CardPrice) {
 // getCardPrice is what actually queries Scryfall to get the current price
 func getCardPrice(card collection.Card) (string, error) {
 	cardNameEscaped := url.QueryEscape(card.CardName)
-
 	cardEncoded := fmt.Sprintf("https://api.scryfall.com/cards/named?exact=%s&set=%s", cardNameEscaped, card.CardSet)
-	var scryfallCard ScryfallCard
 
-	log.Println("Querying for ", cardEncoded)
+	// log.Println("Querying for ", cardEncoded)
 	response, err := http.Get(cardEncoded)
 	if err != nil {
 		return "", fmt.Errorf("query unsuccessful for card - %v", card.CardName)
@@ -51,6 +49,8 @@ func getCardPrice(card collection.Card) (string, error) {
 
 	data, _ := ioutil.ReadAll(response.Body)
 	// log.Println("output is: ", string(data))
+
+	var scryfallCard ScryfallCard
 	err = json.Unmarshal(data, &scryfallCard)
 	if err != nil {
 		return "", fmt.Errorf("Couldn't read price information for card %v - %v", card.CardName, err.Error())
