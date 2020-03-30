@@ -24,12 +24,13 @@ func SetupMetrics() error {
 		return fmt.Errorf("couldn't create batch points - %v", err)
 	}
 
-	ReadPriceMetrics(prices.GetPriceChannel(), bp)
+	ReadPriceMetrics(bp)
 	return nil
 }
 
 // ReadPriceMetrics reads the prices channel and sends the info to influx
-func ReadPriceMetrics(prices *chan prices.CardPrice, bp *batchPointsStruct) {
+func ReadPriceMetrics(bp *batchPointsStruct) {
+	prices := prices.GetPriceChannel()
 	go func() {
 		for {
 			price := <-*prices
