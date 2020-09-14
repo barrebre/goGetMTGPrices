@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/barrebre/goGetMTGPrices/collection"
@@ -44,9 +45,15 @@ func GetCardPrices(cards collection.Collection) {
 			if err != nil {
 				log.Printf("ERROR - Unable to get pricing for %v - %v.\n", card, err.Error())
 			} else {
+				// Turn the price into a float
+				priceFloat, err := strconv.ParseFloat(price, 2)
+				if err != nil {
+					log.Printf("couldn't parse pricing data into float - %v", err.Error())
+				}
+
 				newCardPrice := CardPrice{
 					Card:  card,
-					Price: price,
+					Price: priceFloat,
 				}
 
 				priceChannel <- newCardPrice

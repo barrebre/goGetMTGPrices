@@ -40,7 +40,7 @@ func TestGetCardPrices(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.Name, func(t *testing.T) {
-			GetCardPrices(test.Inputs.Cards, test.Inputs.priceChannel)
+			GetCardPrices(test.Inputs.Cards)
 		})
 	}
 }
