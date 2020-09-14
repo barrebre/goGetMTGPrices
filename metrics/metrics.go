@@ -3,33 +3,70 @@ package metrics
 import (
 	"fmt"
 	"log"
-	"strconv"
+	"os"
 	"time"
 
 	"github.com/barrebre/goGetMTGPrices/collection"
 	"github.com/barrebre/goGetMTGPrices/prices"
 
 	influx "github.com/influxdata/influxdb/client/v2"
+	"github.com/newrelic/newrelic-telemetry-sdk-go/telemetry"
 )
 
 // SetupMetrics sets up reqs for sending metrics to influx
 func SetupMetrics() error {
-	client, err := createInfluxClient()
-	if err != nil {
-		return fmt.Errorf("error creating Influx client - %v", err)
-	}
+	switch backend := os.Getenv("goGetMTGPricesBackend"); backend {
+	case "NewRelic":
+		log.Println("Using NR backend")
+		h, err := telemetry.NewHarvester(telemetry.ConfigAPIKey(os.Getenv("NEW_RELIC_INSIGHTS_INSERT_API_KEY")))
+		if err != nil {
+			return fmt.Errorf("Error creating harvester: %s", err.Error())
+		}
 
-	bp, err := createBatchPointsStruct(client)
-	if err != nil {
-		return fmt.Errorf("couldn't create batch points - %v", err)
-	}
+		NRReadPriceMetrics(h)
+	default:
+		log.Printf("Using backend: %s\n", backend)
+		client, err := createInfluxClient()
+		if err != nil {
+			return fmt.Errorf("error creating Influx client - %v", err)
+		}
 
-	ReadPriceMetrics(bp)
+		bp, err := createBatchPointsStruct(client)
+		if err != nil {
+			return fmt.Errorf("couldn't create batch points - %v", err)
+		}
+
+		InfluxReadPriceMetrics(bp)
+	}
 	return nil
 }
 
-// ReadPriceMetrics reads the prices channel and sends the info to influx
-func ReadPriceMetrics(bp *batchPointsStruct) {
+// NRReadPriceMetrics reads the prices channel and sends the info to influx
+func NRReadPriceMetrics(h *telemetry.Harvester) {
+	prices := prices.GetPriceChannel()
+	go func() {
+		loc, _ := time.LoadLocation("America/Chicago")
+
+		for {
+			price := <-*prices
+
+			metric := telemetry.Summary{
+				Name:       "Card Price",
+				Attributes: getCardTagsInterface(price),
+				Count:      float64(price.Card.Quantity),
+				Max:        price.Price,
+				Timestamp:  time.Now().In(loc),
+			}
+
+			// log.Printf("Created metric: %v", spew.Sdump(metric))
+
+			h.RecordMetric(metric)
+		}
+	}()
+}
+
+// InfluxReadPriceMetrics reads the prices channel and sends the info to influx
+func InfluxReadPriceMetrics(bp *batchPointsStruct) {
 	prices := prices.GetPriceChannel()
 	go func() {
 		for {
@@ -57,7 +94,6 @@ func createCardInfluxDataPoint(price prices.CardPrice) (*influx.Point, error) {
 	if err != nil {
 		return &influx.Point{}, fmt.Errorf("couldn't create influx point - %v", err)
 	}
-	// log.Printf("Made influx point: %v.\n", spew.Sdump(pt))
 
 	return pt, nil
 }
@@ -68,6 +104,20 @@ func getCardTags(price prices.CardPrice) map[string]string {
 
 	// Create a point and add to batch
 	return map[string]string{
+		"cardName": price.Card.CardName,
+		"cardSet":  price.Card.CardSet,
+		"foil":     foilCard,
+		"quantity": fmt.Sprintf("%v", price.Card.Quantity),
+		"deck":     price.Card.Deck,
+	}
+}
+
+// Builds the Tags for a Card
+func getCardTagsInterface(price prices.CardPrice) map[string]interface{} {
+	foilCard := isFoil(price.Card)
+
+	// Create a point and add to batch
+	return map[string]interface{}{
 		"cardName": price.Card.CardName,
 		"cardSet":  price.Card.CardSet,
 		"foil":     foilCard,
@@ -88,16 +138,10 @@ func isFoil(card collection.Card) string {
 
 // Builds the Fields for a card
 func getCardFields(price prices.CardPrice) (map[string]interface{}, error) {
-	// Turn the price into a float
-	priceFloat, err := strconv.ParseFloat(price.Price, 2)
-	if err != nil {
-		return nil, fmt.Errorf("couldn't parse pricing data into float - %v", err.Error())
-	}
-
 	fields := map[string]interface{}{
-		"value":      priceFloat,
+		"value":      price.Price,
 		"quantity":   price.Card.Quantity,
-		"totalValue": priceFloat * float64(price.Card.Quantity),
+		"totalValue": price.Price * float64(price.Card.Quantity),
 	}
 
 	return fields, nil

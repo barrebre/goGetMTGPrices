@@ -7,7 +7,7 @@ import "github.com/barrebre/goGetMTGPrices/collection"
 // CardPrice contains a card name, set, and price
 type CardPrice struct {
 	Card  collection.Card
-	Price string
+	Price float64
 }
 
 // ScryfallCard includes the relevant fields we're looking for when querying Scryfall
@@ -24,7 +24,7 @@ type ScryfallPrices struct {
 //// Accessor
 
 // MakeCardPrice makes a CardPrice object
-func MakeCardPrice(card collection.Card, price string) CardPrice {
+func MakeCardPrice(card collection.Card, price float64) CardPrice {
 	return CardPrice{
 		Card:  card,
 		Price: price,
@@ -35,5 +35,5 @@ func MakeCardPrice(card collection.Card, price string) CardPrice {
 
 // MakeExampleCardPrice creates an example CardPrice object
 func MakeExampleCardPrice() CardPrice {
-	return MakeCardPrice(collection.MakeExampleCard(), "7.21")
+	return MakeCardPrice(collection.MakeExampleCard(), 7.21)
 }

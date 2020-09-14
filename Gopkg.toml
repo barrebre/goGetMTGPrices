@@ -32,6 +32,9 @@
 [[constraint]]
   name = "github.com/influxdata/influxdb"
 
+[[constraint]]
+  name = "github.com/newrelic/newrelic-telemetry-sdk-go"
+
 [prune]
   go-tests = true
   unused-packages = true
