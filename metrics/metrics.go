@@ -20,7 +20,7 @@ func SetupMetrics() error {
 		log.Println("Using NR backend")
 		h, err := telemetry.NewHarvester(telemetry.ConfigAPIKey(os.Getenv("NEW_RELIC_INSIGHTS_INSERT_API_KEY")))
 		if err != nil {
-			return fmt.Errorf("Error creating harvester: %s", err.Error())
+			return fmt.Errorf("error creating harvester: %s", err.Error())
 		}
 
 		NRReadPriceMetrics(h)
@@ -41,7 +41,7 @@ func SetupMetrics() error {
 	return nil
 }
 
-// NRReadPriceMetrics reads the prices channel and sends the info to influx
+// NRReadPriceMetrics reads the prices channel and sends the info to NR
 func NRReadPriceMetrics(h *telemetry.Harvester) {
 	prices := prices.GetPriceChannel()
 	go func() {

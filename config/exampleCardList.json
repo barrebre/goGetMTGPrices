@@ -1,17 +1,14 @@
 {
   "cards": [
     {
-      "Quantity": 3,
-      "CardName": "Mogis, God of Slaughter",
-      "CardSet": "bng",
-      "Deck": "Mogis"
+      "Quantity": 1, 
+      "CardName": "Adriana, Captain of the Guard", 
+      "CardSet": "C20"
     },
     {
-      "CardName": "Alela, Artful Provocateur"
-    },
-    {
-      "CardName": "Estrid, the Masked",
-      "CardSet": "c18",
+      "Quantity": 1, 
+      "CardName": "Aegis of the Gods", 
+      "CardSet": "JOU",
       "Foil": true
     }
   ]
