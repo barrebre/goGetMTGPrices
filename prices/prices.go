@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	queryPricingDelay = 100 * time.Millisecond
+	queryPricingDelay = 50 * time.Millisecond
 )
 
 var (
@@ -74,7 +74,6 @@ func getCardPrice(card collection.Card) (string, error) {
 	}
 
 	data, _ := ioutil.ReadAll(response.Body)
-	// log.Println("output is: ", string(data))
 
 	var scryfallCard ScryfallCard
 	err = json.Unmarshal(data, &scryfallCard)

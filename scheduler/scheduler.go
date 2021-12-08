@@ -21,15 +21,20 @@ const (
 // StartLookupScheduler starts the infinite loop which queries prices after the rateLimiter
 func StartLookupScheduler() {
 	for {
-		err := lookupCardsAndPrices()
-		if err != nil {
-			log.Printf("Error running at %v - %v.\n", time.Now(), err.Error())
-		} else {
-			log.Printf("Successful run at %v.\n", time.Now())
-		}
+		RunLookup()
 
 		// wait for the desired time to query again
 		time.Sleep(rateLimiterTime)
+	}
+}
+
+// RunLookup actually performs the price gathering
+func RunLookup() {
+	err := lookupCardsAndPrices()
+	if err != nil {
+		log.Printf("Error running at %v - %v.\n", time.Now(), err.Error())
+	} else {
+		log.Printf("Successful run at %v.\n", time.Now())
 	}
 }
 
