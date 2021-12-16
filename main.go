@@ -20,7 +20,7 @@ func main() {
 
 	runOnce, err := strconv.ParseBool(os.Getenv("runOnce"))
 	if err != nil {
-		fmt.Printf("WARN - Couldn't parse runOnce env variable. runOnce: %v. error: %v.\n", runOnce, err)
+		fmt.Printf("INFO - Couldn't parse runOnce env variable. runOnce: %v. error: %v.\n", runOnce, err)
 	}
 
 	if !runOnce {
