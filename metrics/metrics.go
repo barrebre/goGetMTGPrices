@@ -51,7 +51,7 @@ func NRReadPriceMetrics(h *telemetry.Harvester) {
 			price := <-*prices
 
 			metric := telemetry.Summary{
-				Name:       "Card Price",
+				Name:       "cardPrice",
 				Attributes: getCardTagsInterface(price),
 				Count:      float64(price.Card.Quantity),
 				Max:        price.Price,
@@ -87,7 +87,7 @@ func createCardInfluxDataPoint(price prices.CardPrice) (*influx.Point, error) {
 	tags := getCardTags(price)
 	fields, err := getCardFields(price)
 	if err != nil {
-		return &influx.Point{}, fmt.Errorf("Couldn't build fields - %v", price)
+		return &influx.Point{}, fmt.Errorf("couldn't build fields - %v", price)
 	}
 
 	pt, err := influx.NewPoint("price", tags, fields, time.Now())
